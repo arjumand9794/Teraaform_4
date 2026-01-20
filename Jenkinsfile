@@ -34,7 +34,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'npm test || echo "No tests found"'
+               sh 'npm test -- --watch=false || true'
             }
         }
     }
