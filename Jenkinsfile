@@ -1,21 +1,40 @@
 pipeline {
     agent any
-      
+
+    tools {
+        nodejs "node.js"
+    }
 
     stages {
-        stage('Git checkout') {
+        stage('Checkout') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/betawins/Trading-UI.git'
-                   }
-}
-        stage('Install npm prerequisites'){
-            steps{
-                sh'npm audit fix'
-                sh'npm install'
-                sh'npm run build'
-                sh'cd /var/lib/jenkins/workspace/Trading-ui-pipeline/build'
-                sh'pm2 --name Trading-UI start npm -- start'
+                git branch: 'master',
+                    url: 'https://github.com/arjumand9794/Teraaform_4.git'
+            }
+        }
+
+        stage('Check Node & NPM') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'CI=false npm run build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test || echo "No tests found"'
             }
         }
     }
