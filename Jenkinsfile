@@ -1,22 +1,43 @@
 pipeline {
     agent any
-      
+
+    tools {
+        nodejs 'Node16'   // use Node14/16 (NOT 18)
+    }
 
     stages {
-        stage('Git checkout') {
+
+        stage('Git Checkout') {
             steps {
-                // Get some code from a GitHub repository
                 git 'https://github.com/betawins/Trading-UI.git'
-                   }
-}
-        stage('Install npm prerequisites'){
-            steps{
-                sh'npm audit fix'
-                sh'npm install'
-                sh'npm run build'
-                sh'cd /var/lib/jenkins/workspace/Trading-ui-pipeline/build'
-                sh'pm2 --name Trading-UI start npm -- start'
             }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'CI=false npm run build'
+            }
+        }
+
+        stage('Archive Build') {
+            steps {
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build Successful'
+        }
+        failure {
+            echo 'Build Failed'
         }
     }
 }
