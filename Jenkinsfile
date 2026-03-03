@@ -19,9 +19,20 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'CI=false npm run build'
+        stage('Parallel Build & Audit') {
+            parallel {
+
+                stage('Build') {
+                    steps {
+                        sh 'CI=false npm run build'
+                    }
+                }
+
+                stage('Security Audit') {
+                    steps {
+                        sh 'npm audit || true'
+                    }
+                }
             }
         }
 
@@ -34,7 +45,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build Successful'
+            echo 'Parallel Build Successful'
         }
         failure {
             echo 'Build Failed'
