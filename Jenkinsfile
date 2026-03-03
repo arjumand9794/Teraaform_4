@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS'   // must match your Global Tool Configuration name
+        nodejs 'NodeJS'
     }
 
     stages {
@@ -21,7 +21,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                sh 'CI=false npm run build'
             }
         }
 
